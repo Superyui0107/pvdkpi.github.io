@@ -8,7 +8,7 @@
     <script src="https://cdn.plot.ly/plotly-2.24.1.min.js"></script>
     <style>
         body {
-            font-family: Arial, sans-serif;
+            font-family: 'Arial', sans-serif;
             padding: 20px;
             background-color: #f8f9fa;
         }
@@ -23,15 +23,16 @@
             background: white;
             border-radius: 8px;
             padding: 15px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 15px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+            height: 100%;
         }
         .chart-container {
             background: white;
             border-radius: 8px;
             padding: 15px;
             margin-bottom: 20px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            box-shadow: 0 1px 3px rgba(0,0,0,0.1);
         }
         #loading {
             position: fixed;
@@ -39,70 +40,94 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255,255,255,0.9);
             display: flex;
             justify-content: center;
             align-items: center;
             z-index: 9999;
         }
+        .score-card {
+            font-size: 1.8rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
     </style>
 </head>
 <body>
     <div id="loading">
-        <div class="spinner-border text-primary" role="status">
+        <div class="spinner-border text-primary" style="width: 3rem; height: 3rem;" role="status">
             <span class="visually-hidden">加载中...</span>
         </div>
     </div>
 
     <div class="container-fluid">
         <div class="dashboard-header">
-            <h1 class="text-center">服务商考核仪表盘</h1>
-            <p class="text-center text-muted">数据月份: <span id="current-month">1970-01</span></p>
+            <h1 class="text-center mb-3">服务商考核仪表盘</h1>
+            <p class="text-center text-muted mb-0">数据月份: <span id="current-month">1970-01</span></p>
         </div>
 
-        <div class="row">
-            <div class="col-md-3">
-                <div class="metric-card">
-                    <h5>选择月份</h5>
-                    <select id="month-select" class="form-select mb-3"></select>
-                </div>
-                
-                <div class="metric-card">
-                    <h5>选择区域</h5>
-                    <select id="region-select" class="form-select mb-3" multiple></select>
-                </div>
-                
-                <div class="metric-card">
-                    <h5>选择服务商</h5>
-                    <select id="provider-select" class="form-select" multiple></select>
-                </div>
-                
-                <div class="metric-card">
-                    <h5>显示模式</h5>
-                    <select id="view-mode" class="form-select">
-                        <option value="overview">综合视图</option>
-                        <option value="region">区域对比</option>
-                        <option value="provider">服务商详情</option>
-                    </select>
+        <div class="row g-3">
+            <!-- 左侧筛选面板 -->
+            <div class="col-lg-3">
+                <div class="card">
+                    <div class="card-body">
+                        <h5 class="card-title">数据筛选</h5>
+                        
+                        <div class="mb-3">
+                            <label for="month-select" class="form-label">选择月份</label>
+                            <select id="month-select" class="form-select"></select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="region-select" class="form-label">选择区域</label>
+                            <select id="region-select" class="form-select" multiple></select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="provider-select" class="form-label">选择服务商</label>
+                            <select id="provider-select" class="form-select" multiple></select>
+                        </div>
+                        
+                        <div class="mb-3">
+                            <label for="view-mode" class="form-label">显示模式</label>
+                            <select id="view-mode" class="form-select">
+                                <option value="overview">综合视图</option>
+                                <option value="region">区域对比</option>
+                                <option value="provider">服务商详情</option>
+                            </select>
+                        </div>
+                        
+                        <button id="reset-btn" class="btn btn-outline-secondary w-100">重置筛选</button>
+                    </div>
                 </div>
             </div>
             
-            <div class="col-md-9">
-                <div class="row" id="metric-cards"></div>
+            <!-- 右侧内容区 -->
+            <div class="col-lg-9">
+                <!-- 核心指标卡片 -->
+                <div class="row row-cols-1 row-cols-md-4 g-3 mb-4" id="metric-cards"></div>
                 
-                <div class="chart-container">
-                    <div id="main-chart" style="height: 500px;"></div>
+                <!-- 主图表区 -->
+                <div class="card mb-4">
+                    <div class="card-body">
+                        <div id="main-chart" style="height: 500px;"></div>
+                    </div>
                 </div>
                 
-                <div class="row">
+                <!-- 次级图表区 -->
+                <div class="row g-3">
                     <div class="col-md-6">
-                        <div class="chart-container">
-                            <div id="secondary-chart-1" style="height: 400px;"></div>
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div id="secondary-chart-1" style="height: 400px;"></div>
+                            </div>
                         </div>
                     </div>
                     <div class="col-md-6">
-                        <div class="chart-container">
-                            <div id="secondary-chart-2" style="height: 400px;"></div>
+                        <div class="card h-100">
+                            <div class="card-body">
+                                <div id="secondary-chart-2" style="height: 400px;"></div>
+                            </div>
                         </div>
                     </div>
                 </div>
@@ -113,100 +138,122 @@
     <script>
         // 全局变量
         let appData = null;
+        let currentCharts = [];
         
         // 初始化页面
         document.addEventListener('DOMContentLoaded', async function() {
             try {
                 // 加载数据
                 const response = await fetch('data.json');
-                appData = await response.json();
+                if (!response.ok) throw new Error(`HTTP错误! 状态码: ${response.status}`);
                 
-                // 初始化下拉菜单
+                const rawData = await response.text();
+                // 处理可能的NaN值
+                const sanitizedData = rawData.replace(/:\s*NaN/g, ': null');
+                appData = JSON.parse(sanitizedData);
+                
+                // 初始化界面
                 initSelectors();
-                
-                // 默认加载最新月份的数据
                 updateDashboard(appData.months[appData.months.length - 1]);
                 
             } catch (error) {
-                console.error('加载数据失败:', error);
-                alert('加载数据失败，请刷新页面重试');
+                console.error('数据加载失败:', error);
+                showError(`数据加载失败: ${error.message}`);
             } finally {
                 document.getElementById('loading').style.display = 'none';
             }
         });
         
-        // 初始化下拉菜单
+        function showError(message) {
+            const container = document.querySelector('.container-fluid');
+            container.innerHTML = `
+                <div class="alert alert-danger">
+                    <h4 class="alert-heading">加载错误</h4>
+                    <p>${message}</p>
+                    <hr>
+                    <p class="mb-0">请刷新页面重试或检查数据文件</p>
+                </div>
+            `;
+        }
+        
         function initSelectors() {
-            // 月份选择器
+            // 初始化月份选择
             const monthSelect = document.getElementById('month-select');
             appData.months.forEach(month => {
-                const option = document.createElement('option');
-                option.value = month;
-                option.textContent = month;
-                monthSelect.appendChild(option);
+                const option = new Option(month, month);
+                monthSelect.add(option);
             });
             
-            // 区域选择器
+            // 初始化区域选择
             const regionSelect = document.getElementById('region-select');
             appData.regions.forEach(region => {
-                const option = document.createElement('option');
-                option.value = region;
-                option.textContent = region;
-                regionSelect.appendChild(option);
+                const option = new Option(region, region);
+                regionSelect.add(option);
             });
             
-            // 服务商选择器
+            // 初始化服务商选择
             const providerSelect = document.getElementById('provider-select');
             appData.providers.forEach(provider => {
-                const option = document.createElement('option');
-                option.value = provider;
-                option.textContent = provider;
-                providerSelect.appendChild(option);
+                const option = new Option(provider, provider);
+                providerSelect.add(option);
             });
             
-            // 绑定事件
-            monthSelect.addEventListener('change', (e) => updateDashboard(e.target.value));
+            // 事件监听
+            monthSelect.addEventListener('change', () => updateDashboard(monthSelect.value));
             regionSelect.addEventListener('change', updateFilters);
             providerSelect.addEventListener('change', updateFilters);
             document.getElementById('view-mode').addEventListener('change', updateFilters);
+            document.getElementById('reset-btn').addEventListener('click', resetFilters);
         }
         
-        // 更新仪表盘
+        function resetFilters() {
+            document.getElementById('region-select').selectedIndex = -1;
+            document.getElementById('provider-select').selectedIndex = -1;
+            document.getElementById('view-mode').value = 'overview';
+            updateFilters();
+        }
+        
         function updateDashboard(selectedMonth) {
             document.getElementById('current-month').textContent = selectedMonth;
             updateFilters();
         }
         
-        // 应用筛选条件
         function updateFilters() {
+            // 销毁现有图表
+            currentCharts.forEach(chart => chart.destroy());
+            currentCharts = [];
+            
             const selectedMonth = document.getElementById('month-select').value;
-            const selectedRegions = Array.from(document.getElementById('region-select').selectedOptions)
-                .map(opt => opt.value);
-            const selectedProviders = Array.from(document.getElementById('provider-select').selectedOptions)
-                .map(opt => opt.value);
+            const selectedRegions = Array.from(
+                document.getElementById('region-select').selectedOptions
+            ).map(opt => opt.value);
+            
+            const selectedProviders = Array.from(
+                document.getElementById('provider-select').selectedOptions
+            ).map(opt => opt.value);
+            
             const viewMode = document.getElementById('view-mode').value;
             
             // 筛选数据
-            let filteredData = appData.records.filter(record => 
-                record.考核月份 === selectedMonth
+            let filteredData = appData.records.filter(
+                record => record.考核月份 === selectedMonth
             );
             
             if (selectedRegions.length > 0) {
-                filteredData = filteredData.filter(record => 
-                    selectedRegions.includes(record.区域)
+                filteredData = filteredData.filter(
+                    record => selectedRegions.includes(record.区域)
                 );
             }
             
             if (selectedProviders.length > 0) {
-                filteredData = filteredData.filter(record => 
-                    selectedProviders.includes(record.服务商名称)
+                filteredData = filteredData.filter(
+                    record => selectedProviders.includes(record.服务商名称)
                 );
             }
             
-            // 更新指标卡片
+            // 更新界面
             updateMetricCards(filteredData);
             
-            // 根据视图模式更新图表
             switch(viewMode) {
                 case 'overview':
                     renderOverviewCharts(filteredData);
@@ -220,109 +267,113 @@
             }
         }
         
-        // 更新指标卡片
         function updateMetricCards(data) {
             const container = document.getElementById('metric-cards');
             container.innerHTML = '';
             
             if (data.length === 0) {
-                container.innerHTML = '<div class="col-12"><div class="alert alert-warning">没有匹配的数据</div></div>';
+                container.innerHTML = `
+                    <div class="col">
+                        <div class="alert alert-warning">当前筛选条件下无数据</div>
+                    </div>
+                `;
                 return;
             }
             
-            // 计算各项指标的平均值
+            // 生成指标卡片
             Object.entries(appData.core_metrics).forEach(([key, metric]) => {
-                const values = data.map(item => item[key]);
-                const avg = values.reduce((a, b) => a + b, 0) / values.length;
+                const values = data.map(item => item[key]).filter(v => v !== null);
+                const avg = values.length > 0 ? 
+                    (values.reduce((a, b) => a + b, 0) / values.length).toFixed(1) : 'N/A';
                 
                 const card = document.createElement('div');
-                card.className = 'col-md-3';
+                card.className = 'col';
                 card.innerHTML = `
                     <div class="metric-card">
-                        <h5>${metric.name}</h5>
-                        <h2>${avg.toFixed(1)}</h2>
-                        <small class="text-muted">平均分</small>
+                        <h5 class="text-center">${metric.name}</h5>
+                        <div class="score-card text-center">${avg}</div>
+                        <p class="text-muted text-center small">平均得分</p>
                     </div>
                 `;
                 container.appendChild(card);
             });
         }
         
-        // 渲染综合视图图表
         function renderOverviewCharts(data) {
-            // 主图表 - 服务商排名
-            const sortedProviders = [...data].sort((a, b) => b.考核总分 - a.考核总分).slice(0, 10);
+            if (data.length === 0) return;
             
-            Plotly.newPlot('main-chart', {
-                data: [{
-                    x: sortedProviders.map(p => p.服务商名称),
-                    y: sortedProviders.map(p => p.考核总分),
-                    type: 'bar',
-                    marker: {color: '#4285F4'}
-                }],
-                layout: {
-                    title: '服务商综合排名TOP10',
-                    xaxis: {title: '服务商名称'},
-                    yaxis: {title: '考核总分'}
-                }
+            // 1. 服务商排名TOP10
+            const topProviders = [...data]
+                .sort((a, b) => b.考核总分 - a.考核总分)
+                .slice(0, 10);
+            
+            const chart1 = Plotly.newPlot('main-chart', [{
+                x: topProviders.map(p => p.服务商名称),
+                y: topProviders.map(p => p.考核总分),
+                type: 'bar',
+                marker: { color: '#4285F4' },
+                text: topProviders.map(p => p.考核总分.toFixed(1)),
+                textposition: 'outside'
+            }], {
+                title: '服务商综合排名TOP10',
+                xaxis: { title: '服务商名称' },
+                yaxis: { title: '考核总分', range: [0, 100] }
             });
+            currentCharts.push(chart1);
             
-            // 次要图表1 - 评级分布
-            const ratingCounts = {};
+            // 2. 评级分布饼图
+            const ratings = {};
             data.forEach(item => {
-                ratingCounts[item.考核评级] = (ratingCounts[item.考核评级] || 0) + 1;
+                ratings[item.考核评级] = (ratings[item.考核评级] || 0) + 1;
             });
             
-            Plotly.newPlot('secondary-chart-1', {
-                data: [{
-                    values: Object.values(ratingCounts),
-                    labels: Object.keys(ratingCounts),
-                    type: 'pie',
-                    hole: 0.4
-                }],
-                layout: {
-                    title: '服务商评级分布'
-                }
+            const chart2 = Plotly.newPlot('secondary-chart-1', [{
+                values: Object.values(ratings),
+                labels: Object.keys(ratings),
+                type: 'pie',
+                hole: 0.4,
+                textinfo: 'percent+label'
+            }], {
+                title: '服务商评级分布'
             });
+            currentCharts.push(chart2);
             
-            // 次要图表2 - 区域对比
-            const regionAverages = {};
+            // 3. 区域对比柱状图
+            const regionStats = {};
             data.forEach(item => {
-                if (!regionAverages[item.区域]) {
-                    regionAverages[item.区域] = {sum: 0, count: 0};
+                if (!regionStats[item.区域]) {
+                    regionStats[item.区域] = { sum: 0, count: 0 };
                 }
-                regionAverages[item.区域].sum += item.考核总分;
-                regionAverages[item.区域].count++;
+                regionStats[item.区域].sum += item.考核总分;
+                regionStats[item.区域].count++;
             });
             
-            const regions = Object.keys(regionAverages);
-            const regionScores = regions.map(region => 
-                (regionAverages[region].sum / regionAverages[region].count).toFixed(1)
+            const regions = Object.keys(regionStats);
+            const regionAverages = regions.map(region => 
+                (regionStats[region].sum / regionStats[region].count).toFixed(1)
             );
             
-            Plotly.newPlot('secondary-chart-2', {
-                data: [{
-                    x: regions,
-                    y: regionScores,
-                    type: 'bar',
-                    marker: {color: '#34A853'}
-                }],
-                layout: {
-                    title: '区域平均分对比',
-                    xaxis: {title: '区域'},
-                    yaxis: {title: '平均分'}
-                }
+            const chart3 = Plotly.newPlot('secondary-chart-2', [{
+                x: regions,
+                y: regionAverages,
+                type: 'bar',
+                marker: { color: '#34A853' },
+                text: regionAverages,
+                textposition: 'outside'
+            }], {
+                title: '区域平均分对比',
+                xaxis: { title: '区域' },
+                yaxis: { title: '平均分', range: [0, 100] }
             });
+            currentCharts.push(chart3);
         }
         
-        // 渲染区域视图图表
         function renderRegionCharts(data) {
-            // 实现区域对比图表...
+            // 区域对比详细实现...
         }
         
-        // 渲染服务商详情图表
         function renderProviderCharts(data) {
-            // 实现服务商详情图表...
+            // 服务商详情实现...
         }
     </script>
 </body>
